@@ -22,7 +22,9 @@ export function MainNav({ items, children }) {
   const [loginSession, setLoginSession] = useState(null);
 
   console.log(loginSession);
-
+  if (session?.error === "RefreshAccessTokenError") {
+    redirect("/login");
+  }
   useEffect(() => {
     setLoginSession(session);
   }, [session]);
