@@ -1,5 +1,5 @@
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 import { doSocialLogin } from "@/app/actions";
 
@@ -28,6 +28,15 @@ const SocialLogins = () => {
           >
             <Image src="/fb.png" alt="google" width={40} height={40} />
             <span>Facebook</span>
+          </Button>
+          <Button
+            className="mt-4 py-2 border-gray-600/30 border rounded-md flex items-center gap-2 justify-center"
+            type="submit"
+            name="action"
+            value="github"
+          >
+            <Image src="/github.png" alt="google" width={40} height={40} />
+            <span>Github</span>
           </Button>
         </div>
       </form>
