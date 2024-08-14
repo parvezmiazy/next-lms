@@ -87,8 +87,10 @@ export function MainNav({ items, children }) {
             <div className="cursor-pointer">
               <Avatar>
                 <AvatarImage
-                  src="https://github.com/shadcn.png"
-                  alt="@shadcn"
+                  src={session?.user?.image}
+                  alt={session?.user?.name}
+                  width={72}
+                  height={72}
                 />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
