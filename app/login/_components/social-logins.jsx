@@ -26,7 +26,7 @@ const SocialLogins = () => {
             name="action"
             value="facebook"
           >
-            <Image src="/fb.png" alt="google" width={40} height={40} />
+            <Image src="/fb.png" alt="facebook" width={40} height={40} />
             <span>Facebook</span>
           </Button>
           <Button
