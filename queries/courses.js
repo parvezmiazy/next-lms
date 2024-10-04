@@ -8,6 +8,7 @@ import {
   replaceMongoIdInArray,
   replaceMongoIdInObject,
 } from "@/lib/convertData";
+
 import { getEnrollmentsForCourse } from "./enrollments";
 import { getTestimonialsForCourse } from "./testimonials";
 
@@ -41,6 +42,7 @@ export async function getCourseList() {
     .lean();
   return replaceMongoIdInArray(courses);
 }
+
 export async function getCourseDetails(id) {
   const course = await Course.findById(id)
     .populate({
@@ -64,17 +66,20 @@ export async function getCourseDetails(id) {
       model: Module,
     })
     .lean();
+
   return replaceMongoIdInObject(course);
 }
 
 export async function getCourseDetailsByInstructor(instructorId) {
   const courses = await Course.find({ instructor: instructorId }).lean();
+
   const enrollments = await Promise.all(
     courses.map(async (course) => {
       const enrollment = await getEnrollmentsForCourse(course._id.toString());
       return enrollment;
     })
   );
+
   const totalEnrollments = enrollments.reduce((item, currentValue) => {
     return item.length + currentValue.length;
   });
@@ -87,16 +92,17 @@ export async function getCourseDetailsByInstructor(instructorId) {
   );
 
   const totalTestimonials = testimonials.flat();
-
   const avgRating =
     totalTestimonials.reduce(function (acc, obj) {
       return acc + obj.rating;
     }, 0) / totalTestimonials.length;
 
+  //console.log("testimonials", totalTestimonials, avgRating);
+
   return {
     courses: courses.length,
     enrollments: totalEnrollments,
-    reviews: totalTestimonials,
+    reviews: totalTestimonials.length,
     ratings: avgRating.toPrecision(2),
   };
 }
