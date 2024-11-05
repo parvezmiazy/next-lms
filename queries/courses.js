@@ -80,8 +80,8 @@ export async function getCourseDetailsByInstructor(instructorId) {
     })
   );
 
-  const totalEnrollments = enrollments.reduce((item, currentValue) => {
-    return item.length + currentValue.length;
+  const totalEnrollments = enrollments.reduce(function (acc, obj) {
+    return acc + obj.length;
   });
 
   const testimonials = await Promise.all(
