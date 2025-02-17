@@ -1,13 +1,20 @@
-import { auth } from "@/auth";
 import { Button } from "@/components/ui/button";
-import { stripe } from "@/lib/stripe";
-import { getCourseDetails } from "@/queries/courses";
-import { enrollForCourse } from "@/queries/enrollments";
-import { getUserByEmail } from "@/queries/users";
 import { CircleCheck } from "lucide-react";
 import Link from "next/link";
+
+import { auth } from "@/auth";
+import { stripe } from "@/lib/stripe";
+import { getCourseDetails } from "@/queries/courses";
+import { getUserByEmail } from "@/queries/users";
 import { redirect } from "next/navigation";
+
+import { sendEmails } from "@/lib/emails";
+
+import { enrollForCourse } from "@/queries/enrollments";
+
 const Success = async ({ searchParams: { session_id, courseId } }) => {
+  console.log(session_id, courseId);
+
   if (!session_id)
     throw new Error("Please provide a valid session id that starts with cs_");
 
@@ -19,12 +26,18 @@ const Success = async ({ searchParams: { session_id, courseId } }) => {
 
   const course = await getCourseDetails(courseId);
   const loggedInUser = await getUserByEmail(userSession?.user?.email);
-  const checkoutSession = await stripe.checkout.sessions.retrive(session_id, {
+  console.log(loggedInUser);
+
+  const checkoutSession = await stripe.checkout.sessions.retrieve(session_id, {
     expand: ["line_items", "payment_intent"],
   });
 
+  //console.log(checkoutSession);
+
   const paymentIntent = checkoutSession?.payment_intent;
   const paymentStatus = paymentIntent?.status;
+
+  console.log(paymentStatus);
 
   // Cutomer info
   const customerName = `${loggedInUser?.firstName} ${loggedInUser?.lastName}`;
@@ -61,8 +74,8 @@ const Success = async ({ searchParams: { session_id, courseId } }) => {
       },
     ];
 
-    // const emailSentResponse = await sendEmails(emailsToSend);
-    //console.log(emailSentResponse);
+    const emailSentResponse = await sendEmails(emailsToSend);
+    console.log(emailSentResponse);
   }
 
   return (
@@ -70,7 +83,7 @@ const Success = async ({ searchParams: { session_id, courseId } }) => {
       <div className="flex flex-col items-center gap-6 max-w-[600px] text-center">
         {paymentStatus === "succeeded" && (
           <>
-            <CircleCheck className="w-32 h-32 bg-success rounded-full p-0 text-white" />
+            <CircleCheck className="w-32 h-32 bg-success rounded-full p-0 text-red" />
             <h1 className="text-xl md:text-2xl lg:text-3xl">
               Congratulations, <strong>{customerName}</strong>! Your Enrollment
               was Successful for <strong>{productName}</strong>
