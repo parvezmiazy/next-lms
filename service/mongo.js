@@ -6,7 +6,7 @@ export async function dbConnect() {
       String(process.env.MONGODB_CONNECTION_STRING)
     );
     return conn;
-    console.log(conn);
+    console.log("db is connected" + conn);
   } catch (err) {
     console.error(err);
   }

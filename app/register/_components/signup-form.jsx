@@ -39,6 +39,8 @@ export function SignupForm({ role }) {
         }),
       });
 
+      //console.log(response);
+
       response.status === 201 && router.push("/login");
     } catch (e) {
       console.log(e.message);

@@ -2,12 +2,17 @@
 
 import { stripe } from "@/lib/stripe";
 import { formatAmountForStripe } from "@/lib/stripe-helpers";
+import { getCourseDetails } from "@/queries/courses";
 import { headers } from "next/headers";
 const CURRENCY = "bdt";
 export async function createCheckoutSession(data) {
   const ui_mode = "hosted";
   const origin = headers().get("origin");
   const courseId = data.get("courseId");
+  const course = await getCourseDetails(courseId);
+  if (!course) return new Error(`Course not found`);
+  const courseName = course?.title;
+  const coursePrice = course?.price;
   const checkoutSession = await stripe.checkout.sessions.create({
     mode: "payment",
     submit_type: "auto",
@@ -17,9 +22,9 @@ export async function createCheckoutSession(data) {
         price_data: {
           currency: CURRENCY,
           product_data: {
-            name: data.get("courseName"),
+            name: courseName,
           },
-          unit_amount: formatAmountForStripe(data.get("coursePrice"), CURRENCY),
+          unit_amount: formatAmountForStripe(coursePrice, CURRENCY),
         },
       },
     ],
@@ -38,7 +43,7 @@ export async function createCheckoutSession(data) {
 
 export async function createPaymentIntent(data) {
   const paymentIntent = await Stripe.paymentIntent.create({
-    amount: formatAmountForStripe(data.get("coursePrice"), CURRENCY),
+    amount: formatAmountForStripe(coursePrice, CURRENCY),
     automatic_payment_methods: { enabled: true },
     currency: CURRENCY,
   });
